@@ -4,6 +4,13 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
+# Set random seeds for reproducibility
+np.random.seed(42)
+import random
+random.seed(42)
+import tensorflow as tf
+tf.random.set_seed(42)
+
 def preprocess_image(image):
     image = image.resize((28, 28))
     image = image.convert('L')  # Convert to grayscale
@@ -35,11 +42,10 @@ x_train, x_test = x_train / 255.0, x_test / 255.0
 
 # Build the model
 model = models.Sequential([
-    layers.Flatten(input_shape=(28, 28)),    # Flatten the input images
-    layers.Dense(128, activation='relu'),    # Hidden layer with 128 neurons and ReLU activation
-    layers.Dense(64, activation='relu'),
-    layers.Dense(32, activation='relu'),
-    layers.Dropout(0.2),                     # Dropout layer to prevent overfitting
+    layers.Conv1D(filters=64, kernel_size=3, activation='relu', input_shape=(28, 28)),    # Flatten the input images
+    layers.MaxPooling1D(pool_size=2),    # Hidden layer with 128 neurons and ReLU activation
+    layers.Flatten(),
+    layers.Dense(128, activation='relu'),
     layers.Dense(10, activation='softmax')   # Output layer with 10 neurons (one for each class) and softmax activation
 ])
 
@@ -49,7 +55,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Train the model
-model.fit(x_train, y_train, epochs=5)
+model.fit(x_train, y_train, epochs=4)
 
 # Setup user interface
 root = tk.Tk()
